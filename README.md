@@ -10,4 +10,4 @@
 
 ## Sandbox link:
 
-https://codesandbox.io/s/relaxed-fire-wtqik6?file=/src/makeData.js
+https://codesandbox.io/s/relaxed-fire-wtqik6?file=/src/App.js
