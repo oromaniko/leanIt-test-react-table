@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useTable, usePagination, useSortBy } from 'react-table'
+import { useTable, usePagination, useSortBy, useFilters } from 'react-table'
 
 function SelectColumnFilter({
   column: { filterValue, setFilter, preFilteredRows, id },
@@ -58,6 +58,7 @@ export default function Table({ columns, data, handleDataUpdate }) {
       data,
       initialState: { pageIndex: 0 },
     },
+    useFilters,
     useSortBy,
     usePagination,
   )
@@ -88,13 +89,16 @@ export default function Table({ columns, data, handleDataUpdate }) {
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render('Header')}
                   {/* Add a sort direction indicator */}
-                  <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? ' 🔽'
-                        : ' 🔼'
-                      : ''}
-                  </span>
+                  <div>
+                    {column.filter === 'sort'
+                      ? column.isSorted
+                        ? column.isSortedDesc
+                          ? ' 🔽'
+                          : ' 🔼'
+                        : <button>sort</button>
+                      : null}
+                  </div>
+                  <div>{column.filter === 'select' ? <SelectColumnFilter column={column} /> : null}</div>
                 </th>
               ))}
             </tr>
