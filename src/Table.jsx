@@ -1,23 +1,25 @@
-import React, { useState } from 'react'
-import { useTable, usePagination, useSortBy, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-table'
+import React from 'react';
+import {
+  useTable, usePagination, useSortBy, useFilters, useGlobalFilter, useAsyncDebounce,
+} from 'react-table';
 
 function GlobalFilter({
   preGlobalFilteredRows,
   globalFilter,
   setGlobalFilter,
 }) {
-  const count = preGlobalFilteredRows.length
-  const [value, setValue] = React.useState(globalFilter)
-  const onChange = useAsyncDebounce(value => {
-    setGlobalFilter(value || undefined)
-  }, 200)
+  const count = preGlobalFilteredRows.length;
+  const [value, setValue] = React.useState(globalFilter);
+  const onChange = useAsyncDebounce((val) => {
+    setGlobalFilter(val || undefined);
+  }, 200);
 
   return (
     <span>
       Search:{' '}
       <input
-        value={value || ""}
-        onChange={e => {
+        value={value || ''}
+        onChange={(e) => {
           setValue(e.target.value);
           onChange(e.target.value);
         }}
@@ -28,28 +30,27 @@ function GlobalFilter({
         }}
       />
     </span>
-  )
+  );
 }
 
 function SelectColumnFilter({
-  column: { filterValue, setFilter, preFilteredRows, id },
+  column: {
+    filterValue, setFilter, preFilteredRows, id,
+  },
 }) {
-  // Calculate the options for filtering
-  // using the preFilteredRows
   const options = React.useMemo(() => {
-    const options = new Set()
-    preFilteredRows.forEach(row => {
-      options.add(row.values[id])
-    })
-    return [...options.values()]
-  }, [id, preFilteredRows])
+    const optionsSet = new Set();
+    preFilteredRows.forEach((row) => {
+      optionsSet.add(row.values[id]);
+    });
+    return [...optionsSet.values()];
+  }, [id, preFilteredRows]);
 
-  // Render a multi-select box
   return (
     <select
       value={filterValue}
-      onChange={e => {
-        setFilter(e.target.value || undefined)
+      onChange={(e) => {
+        setFilter(e.target.value || undefined);
       }}
     >
       <option value="">All</option>
@@ -59,11 +60,10 @@ function SelectColumnFilter({
         </option>
       ))}
     </select>
-  )
+  );
 }
 
 export default function Table({ columns, data, handleDataUpdate }) {
-  // Use the state and functions returned from useTable to build your UI
   const {
     getTableProps,
     getTableBodyProps,
@@ -92,34 +92,17 @@ export default function Table({ columns, data, handleDataUpdate }) {
     useGlobalFilter,
     useSortBy,
     usePagination,
-  )
+  );
 
-  // Render the UI for your table
   return (
     <>
-      <pre>
-        <code>
-          {JSON.stringify(
-            {
-              pageIndex,
-              pageSize,
-              pageCount,
-              canNextPage,
-              canPreviousPage,
-            },
-            null,
-            2
-          )}
-        </code>
-      </pre>
       <table {...getTableProps()}>
         <thead>
-          {headerGroups.map(headerGroup => (
+          {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
+              {headerGroup.headers.map((column) => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render('Header')}
-                  {/* Add a sort direction indicator */}
                   <div>
                     {column.filter === 'sort'
                       ? column.isSorted
@@ -150,22 +133,18 @@ export default function Table({ columns, data, handleDataUpdate }) {
           </tr>
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row, i) => {
-            prepareRow(row)
+          {page.map((row) => {
+            prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
-                {row.cells.map(cell => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                })}
+                {row.cells.map((cell) => (
+                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                ))}
               </tr>
-            )
+            );
           })}
         </tbody>
       </table>
-      {/* 
-        Pagination can be built however you'd like. 
-        This is just a very basic UI implementation:
-      */}
       <div className="pagination">
         <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
           {'<<'}
@@ -190,22 +169,22 @@ export default function Table({ columns, data, handleDataUpdate }) {
           <input
             type="number"
             defaultValue={pageIndex + 1}
-            onChange={e => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0
-              gotoPage(page)
+            onChange={(e) => {
+              const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0;
+              gotoPage(pageNumber);
             }}
             style={{ width: '100px' }}
           />
         </span>{' '}
         <select
           value={pageSize}
-          onChange={e => {
-            setPageSize(Number(e.target.value))
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
           }}
         >
-          {[10, 20, 30, 40, 50].map(pageSize => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
+          {[10, 20, 30, 40, 50].map((size) => (
+            <option key={size} value={size}>
+              Show {size}
             </option>
           ))}
         </select>
@@ -216,5 +195,5 @@ export default function Table({ columns, data, handleDataUpdate }) {
         </button>
       </div>
     </>
-  )
+  );
 }

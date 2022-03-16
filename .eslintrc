@@ -1,0 +1,25 @@
+{
+  "root": true,
+  "extends": [
+    "react-app"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "import/no-anonymous-default-export": 0
+  },
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "detect"
+    },
+    "import/extensions": [
+      ".js",
+      ".jsx"
+    ]
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "jest": true
+  }
+}
