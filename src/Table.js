@@ -1,5 +1,35 @@
 import React, { useState } from 'react'
-import { useTable, usePagination, useSortBy, useFilters } from 'react-table'
+import { useTable, usePagination, useSortBy, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-table'
+
+function GlobalFilter({
+  preGlobalFilteredRows,
+  globalFilter,
+  setGlobalFilter,
+}) {
+  const count = preGlobalFilteredRows.length
+  const [value, setValue] = React.useState(globalFilter)
+  const onChange = useAsyncDebounce(value => {
+    setGlobalFilter(value || undefined)
+  }, 200)
+
+  return (
+    <span>
+      Search:{' '}
+      <input
+        value={value || ""}
+        onChange={e => {
+          setValue(e.target.value);
+          onChange(e.target.value);
+        }}
+        placeholder={`${count} records...`}
+        style={{
+          fontSize: '1.1rem',
+          border: '0',
+        }}
+      />
+    </span>
+  )
+}
 
 function SelectColumnFilter({
   column: { filterValue, setFilter, preFilteredRows, id },
@@ -39,10 +69,7 @@ export default function Table({ columns, data, handleDataUpdate }) {
     getTableBodyProps,
     headerGroups,
     prepareRow,
-    page, // Instead of using 'rows', we'll use page,
-    // which has only the rows for the active page
-
-    // The rest of these things are super handy, too ;)
+    page,
     canPreviousPage,
     canNextPage,
     pageOptions,
@@ -51,7 +78,10 @@ export default function Table({ columns, data, handleDataUpdate }) {
     nextPage,
     previousPage,
     setPageSize,
-    state: { pageIndex, pageSize },
+    state: { pageIndex, pageSize, globalFilter },
+    visibleColumns,
+    preGlobalFilteredRows,
+    setGlobalFilter,
   } = useTable(
     {
       columns,
@@ -59,6 +89,7 @@ export default function Table({ columns, data, handleDataUpdate }) {
       initialState: { pageIndex: 0 },
     },
     useFilters,
+    useGlobalFilter,
     useSortBy,
     usePagination,
   )
@@ -103,6 +134,20 @@ export default function Table({ columns, data, handleDataUpdate }) {
               ))}
             </tr>
           ))}
+          <tr>
+            <th
+              colSpan={visibleColumns.length}
+              style={{
+                textAlign: 'left',
+              }}
+            >
+              <GlobalFilter
+                preGlobalFilteredRows={preGlobalFilteredRows}
+                globalFilter={globalFilter}
+                setGlobalFilter={setGlobalFilter}
+              />
+            </th>
+          </tr>
         </thead>
         <tbody {...getTableBodyProps()}>
           {page.map((row, i) => {
