@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import makeData from './makeData';
+import generateData from './makeData';
 import Table from './Table';
+import Loader from './Loader';
 import columns from './columns';
 
 const TableWrapper = styled.div`
@@ -39,8 +40,21 @@ const TableWrapper = styled.div`
 `;
 
 function App() {
-  const [tableData, setTableData] = useState(makeData(1000));
-  const updateData = React.useCallback(() => setTableData(makeData(1000)), []);
+  const [tableData, setTableData] = useState([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  const updateData = useCallback(async () => {
+    isDataLoaded && setIsDataLoaded(false);
+    const data = await generateData();
+    setTableData(data);
+    setIsDataLoaded(true);
+  }, []);
+
+  useEffect(() => updateData(), []);
+
+  if (!isDataLoaded) {
+    return <Loader />;
+  }
 
   return (
     <TableWrapper>

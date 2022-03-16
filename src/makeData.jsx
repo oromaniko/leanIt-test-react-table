@@ -37,4 +37,6 @@ const makeData = (...lens) => {
   return makeDataLevel();
 };
 
-export default makeData;
+const generateData = () => new Promise((resolve) => setTimeout(() => resolve(() => makeData(100000))))
+
+export default generateData;
